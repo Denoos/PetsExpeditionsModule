@@ -37,7 +37,6 @@ send walk - {"Character":666, "AC":27,"BAB":10,"BaseDamage":"1d8","CHA":10,"CON"
 
 get log -> GetLog?id=10000
 
-
 методы (добавить событие/получить список событий/изменить событие)
 
 {"AC":40,"AttackBonus":5,"BAB":16,"BaseDamage":"1d8","CHA":10,"CON":21,"CritHitMult":2,"DEX":22,"DamageBonus":"2d8","Fort":19,"GoodEvil":5,"INT":9,"LawChaos":1,"MaxHP":216,"Name":"\u041f\u043e\u043b\u044f\u0440\u043d\u044b\u0439 \u0432\u043e\u043b\u043a","Refl":16,"STR":28,"WIS":14,"Will":16}
