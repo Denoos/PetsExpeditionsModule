@@ -1,0 +1,51 @@
+питомцы
+экспедиции нада сделать
+в игре игрок открывает окошко, выбирает пета и отправляет его в экспедицию
+-> http запрос о том, что игрок с индеком 666 отправляет {питомца} в экспедицию
+мне нужен api-сервер, который получит этот запрос, создаст экспедцию, рассчитает события, бои и какой-то результат
+естественно, нужно обрабатывать еще запрос - когда игрок интересуется статусом экспедиции - тогда ему нужно вернуть лог событий, боев, жив ли вообще питомец и тп
+экспедиция кончается когда пет наверное дохнет либо когда выходит время экспедиции (допустим от 10 до 24 часов).
+т.е. отправляем в экспедицию - запоминаем время, потом игрок дергает статус - мы смотрим, сколько времени прошло и выдаем лог за это время.
+
+нужно использовать бд (mysql/sqlite)
+алгоритм расчета событий и боев
+события надо выбирать рандомно (список где-то редачить - либо отдельные котроллеры, либо че-то еще, мб достаточно редачить бд)
+Бои - тут нужны монстрюки, у нас есть статы у петов, петы разного уровня
+можно замутить упрощенный батл, типа когда они по очереди ходят пока кто-то не помрет. Один vs Один. Надо придумать несколько мобов (и дать возможность их добавлять) (лучше взять из книг правил - чтобы хотя бы статы и названия были похожи на правду)
+
+1. нам приходит запрос с петом - на экспедицию
+2. мы рассчиваем (сразу или отложенно) все, что происходит с петом, при этом прописываем время наперед для всех событий и сохраням все это в бд
+3. нам приходит запрос - чек пета - смотрим время, берем разницу, получаем набор событий, которые входят в эту временную разницу и выводим в виде лога и какого-то результата (закончена экспедиция или нет, если да - то как закончена - сдох/не сдох/кол-во вещей/золота)
+
+get status - {"Character":666}
+
+send walk - {"Character":666, "AC":27,"BAB":10,"BaseDamage":"1d8","CHA":10,"CON":18,"CritHitMult":2,"DEX":20,"DamageBonus":"1d6","Fort":14,"GoodEvil":5,"INT":9,"LawChaos":1,"MaxHP":160,"Name":"\u0417\u0438\u043c\u043d\u0438\u0439 \u0432\u043e\u043b\u043a","Refl":12,"STR":24,"WIS":14,"Will":12}
+
+get log -> GetLog?id=10000
+
+
+методы (добавить событие/получить список событий/изменить событие)
+
+{"AC":40,"AttackBonus":5,"BAB":16,"BaseDamage":"1d8","CHA":10,"CON":21,"CritHitMult":2,"DEX":22,"DamageBonus":"2d8","Fort":19,"GoodEvil":5,"INT":9,"LawChaos":1,"MaxHP":216,"Name":"\u041f\u043e\u043b\u044f\u0440\u043d\u044b\u0439 \u0432\u043e\u043b\u043a","Refl":16,"STR":28,"WIS":14,"Will":16}
+{"AC":48,"AttackBonus":5,"BAB":20,"BaseDamage":"1d8","CHA":10,"CON":22,"CritHitMult":2,"DEX":23,"DamageBonus":"2d8","Fort":27,"GoodEvil":5,"INT":9,"LawChaos":1,"MaxHP":342,"Name":"\u041f\u043e\u043b\u044f\u0440\u043d\u044b\u0439 \u0432\u043e\u043b\u043a-\u0432\u043e\u0436\u0430\u043a","Refl":18,"STR":30,"WIS":14,"Will":21}
+{"AC":25,"BAB":7,"BaseDamage":"1d8","CHA":10,"CON":14,"CritHitMult":2,"DEX":16,"Fort":9,"GoodEvil":1,"INT":6,"LawChaos":1,"MaxHP":160,"Name":"\u0411\u0430\u0440\u0441\u0443\u043a","Refl":10,"STR":10,"WIS":11,"Will":3}
+{"AC":36,"BAB":11,"BaseDamage":"1d8","CHA":10,"CON":17,"CritHitMult":2,"DEX":20,"Fort":15,"GoodEvil":1,"INT":6,"LawChaos":1,"MaxHP":220,"Name":"\u0423\u0436\u0430\u0441\u043d\u044b\u0439 \u0431\u0430\u0440\u0441\u0443\u043a","Refl":14,"STR":14,"WIS":18,"Will":12}
+{"AC":37,"AttackBonus":5,"BAB":14,"BaseDamage":"1d8","CHA":10,"CON":21,"CritHitMult":2,"DEX":22,"DamageBonus":"2d8","Fort":19,"GoodEvil":1,"INT":6,"LawChaos":1,"MaxHP":272,"Name":"\u0420\u043e\u0441\u043e\u043c\u0430\u0445\u0430","Refl":16,"STR":16,"WIS":24,"Will":17}
+{"AC":39,"AttackBonus":4,"BAB":14,"BaseDamage":"1d6","CHA":9,"CON":16,"CritHitMult":2,"DEX":22,"DamageBonus":"1d10","Fort":21,"GoodEvil":1,"INT":3,"LawChaos":1,"MaxHP":240,"Name":"\u041e\u0433\u043d\u0435\u043d\u043d\u044b\u0439 \u043c\u0443\u0440\u0430\u0432\u0435\u0439-\u0441\u043e\u043b\u0434\u0430\u0442","Refl":16,"STR":26,"WIS":11,"Will":12}
+{"AC":25,"BAB":7,"BaseDamage":"2d6","CHA":9,"CON":10,"CritHitMult":2,"DEX":14,"DamageBonus":"1d6","Fort":7,"GoodEvil":1,"INT":3,"LawChaos":1,"MaxHP":100,"Name":"\u041b\u0438\u0447\u0438\u043d\u043a\u0430 \u043c\u0443\u0440\u0430\u0432\u044c\u044f","Refl":5,"STR":20,"WIS":11,"Will":3}
+{"AC":44,"AttackBonus":4,"BAB":17,"BaseDamage":"1d6","CHA":9,"CON":24,"CritHitMult":2,"DEX":18,"DamageBonus":"1d10","Fort":28,"GoodEvil":1,"INT":3,"LawChaos":1,"MaxHP":340,"Name":"\u041e\u0433\u043d\u0435\u043d\u043d\u044b\u0439 \u043c\u0443\u0440\u0430\u0432\u0435\u0439-\u043f\u0441\u0438\u043e\u043d\u0438\u043a","Refl":16,"STR":30,"WIS":20,"Will":15}
+{"AC":33,"AttackBonus":3,"BAB":12,"BaseDamage":"1d8","CHA":16,"CON":18,"CritHitMult":3,"DEX":22,"Fort":15,"GoodEvil":5,"INT":14,"LawChaos":2,"MaxHP":160,"Name":"\u0421\u0443\u043a\u043a\u0443\u0431-\u043e\u0445\u043e\u0442\u043d\u0438\u043a","Refl":19,"STR":14,"WIS":10,"Will":11}
+{"AC":45,"AttackBonus":3,"BAB":16,"BaseDamage":"1d8","CHA":16,"CON":21,"CritHitMult":3,"DEX":24,"Fort":18,"GoodEvil":5,"INT":18,"LawChaos":2,"MaxHP":240,"Name":"\u0421\u0443\u043a\u043a\u0443\u0431-\u0443\u0431\u0438\u0439\u0446\u0430","Refl":24,"STR":16,"WIS":10,"Will":14}
+{"AC":51,"AttackBonus":3,"BAB":18,"BaseDamage":"1d8","CHA":16,"CON":21,"CritHitMult":3,"DEX":26,"Fort":21,"GoodEvil":5,"INT":20,"LawChaos":2,"MaxHP":280,"Name":"\u0421\u0443\u043a\u043a\u0443\u0431-\u0413\u043e\u0441\u043f\u043e\u0436\u0430","Refl":22,"STR":18,"WIS":10,"Will":16}
+{"AC":33,"BAB":6,"BaseDamage":"1d4","CHA":9,"CON":10,"CritHitMult":2,"DEX":20,"Fort":4,"GoodEvil":1,"INT":26,"LawChaos":1,"MaxHP":100,"Name":"\u041a\u043d\u0438\u0433\u0430 \u041c\u0430\u0433\u0438\u0438","Refl":9,"STR":20,"WIS":11,"Will":8}
+{"AC":33,"BAB":8,"BaseDamage":"1d4","CHA":9,"CON":10,"CritHitMult":2,"DEX":20,"Fort":7,"GoodEvil":1,"INT":30,"LawChaos":1,"MaxHP":150,"Name":"\u041a\u043d\u0438\u0433\u0430 \u041d\u0435\u043a\u0440\u043e\u043c\u0430\u043d\u0442\u0438\u0438","Refl":10,"STR":20,"WIS":11,"Will":10}
+{"AC":33,"BAB":9,"BaseDamage":"1d4","CHA":9,"CON":10,"CritHitMult":2,"DEX":20,"Fort":10,"GoodEvil":1,"INT":30,"LawChaos":1,"MaxHP":200,"Name":"\u041a\u043d\u0438\u0433\u0430 \u041c\u0435\u0440\u0437\u043a\u043e\u0439 \u0422\u044c\u043c\u044b","Refl":11,"STR":20,"WIS":11,"Will":11}
+{"AC":22,"BAB":3,"BaseDamage":"1d8","CHA":10,"CON":20,"CritHitMult":2,"DEX":11,"Fort":6,"GoodEvil":1,"INT":6,"LawChaos":1,"MaxHP":150,"Name":"\u0421\u0443\u043d\u0434\u0443\u043a \u0438\u0437 \u0416\u0435\u043b\u0435\u0437\u043d\u043e\u0433\u043e \u0414\u0435\u0440\u0435\u0432\u0430","Refl":1,"STR":10,"WIS":11,"Will":1}
+{"AC":27,"BAB":7,"BaseDamage":"2d6","CHA":10,"CON":20,"CritHitMult":2,"DEX":11,"DamageBonus":"1d6","Fort":8,"GoodEvil":1,"INT":6,"LawChaos":1,"MaxHP":200,"Name":"\u0421\u0443\u043d\u0434\u0443\u043a \u0438\u0437 \u0416\u0435\u043b\u0435\u0437\u043d\u043e\u0433\u043e \u0414\u0435\u0440\u0435\u0432\u0430","Refl":3,"STR":10,"WIS":11,"Will":3}
+{"AC":29,"AttackBonus":4,"BAB":10,"BaseDamage":"2d10","CHA":10,"CON":20,"CritHitMult":2,"DEX":11,"Fort":12,"GoodEvil":1,"INT":6,"LawChaos":1,"MaxHP":220,"Name":"\u0421\u0442\u0430\u0440\u044b\u0439 \u0421\u0443\u043d\u0434\u0443\u043a","Refl":8,"STR":10,"WIS":11,"Will":4}
+{"AC":35,"AttackBonus":4,"BAB":10,"BaseDamage":"1d6","CHA":10,"CON":15,"CritHitMult":2,"DEX":20,"DamageBonus":"1d10","Fort":18,"GoodEvil":1,"INT":12,"LawChaos":1,"MaxHP":140,"Name":"\u0422\u0435\u043d\u0435\u0432\u043e\u0439 \u0430\u0441\u043f\u0438\u0434","Refl":15,"STR":10,"WIS":10,"Will":16}
+{"AC":41,"AttackBonus":4,"BAB":15,"BaseDamage":"1d6","CHA":10,"CON":22,"CritHitMult":2,"DEX":32,"DamageBonus":"1d10","Fort":24,"GoodEvil":1,"INT":14,"LawChaos":1,"MaxHP":250,"Name":"\u0422\u0435\u043d\u0435\u0432\u043e\u0439 \u0430\u0441\u043f\u0438\u0434-\u0441\u0442\u0440\u0430\u0436","Refl":26,"STR":18,"WIS":10,"Will":19}
+{"AC":44,"AttackBonus":4,"BAB":16,"BaseDamage":"1d6","CHA":10,"CON":24,"CritHitMult":2,"DEX":32,"DamageBonus":"1d10","Fort":26,"GoodEvil":1,"INT":18,"LawChaos":1,"MaxHP":270,"Name":"\u0422\u0435\u043d\u0435\u0432\u043e\u0439 \u0430\u0441\u043f\u0438\u0434-\u0433\u0438\u0433\u0430\u043d\u0442","Refl":27,"STR":24,"WIS":10,"Will":22}
+{"AC":35,"BAB":11,"BaseDamage":"2d6","CHA":10,"CON":20,"CritHitMult":2,"DEX":20,"Fort":20,"GoodEvil":5,"INT":14,"LawChaos":2,"MaxHP":150,"Name":"\u0417\u0435\u043b\u0435\u043d\u044b\u0439 \u0434\u0440\u0430\u043a\u043e\u043d\u0447\u0438\u043a","Refl":14,"STR":16,"WIS":16,"Will":16}
+{"AC":42,"AttackBonus":4,"BAB":17,"BaseDamage":"2d6","CHA":10,"CON":27,"CritHitMult":2,"DEX":16,"DamageBonus":"1d8","Fort":27,"GoodEvil":5,"INT":14,"LawChaos":2,"MaxHP":278,"Name":"\u041c\u043e\u043b\u043e\u0434\u043e\u0439 \u0437\u0435\u043b\u0435\u043d\u044b\u0439 \u0434\u0440\u0430\u043a\u043e\u043d","Refl":17,"STR":28,"WIS":20,"Will":21}
+{"AC":53,"AttackBonus":4,"BAB":20,"BaseDamage":"1d10","CHA":10,"CON":27,"CritHitMult":2,"DEX":14,"DamageBonus":"1d10","Fort":28,"GoodEvil":5,"INT":14,"LawChaos":2,"MaxHP":290,"Name":"\u0420\u044b\u0446\u0430\u0440\u044c \u0414\u0440\u0430\u043a\u043e\u043d","Refl":18,"STR":28,"WIS":20,"Will":22}
