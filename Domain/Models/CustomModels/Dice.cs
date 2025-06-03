@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Domain.Models.DataBaseModels
+namespace Domain.Models.CustomModels
 {
     public static class Dice
     {
